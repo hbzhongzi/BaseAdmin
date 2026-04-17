@@ -1,0 +1,46 @@
+<template>
+  <el-menu
+    default-active="Dashboard"
+    class="sidebar-menu"
+    background-color="transparent"
+    text-color="#ccc"
+    active-text-color="#fff"
+    router
+  >
+    <el-menu-item index="/">
+      <template #title>
+        <i class="el-icon-menu"></i>
+        <span>仪表盘</span>
+      </template>
+    </el-menu-item>
+    <el-menu-item index="/events">
+      <template #title>
+        <i class="el-icon-date"></i>
+        <span>事件管理</span>
+      </template>
+    </el-menu-item>
+    <el-menu-item index="/users">
+      <template #title>
+        <i class="el-icon-user"></i>
+        <span>用户管理</span>
+      </template>
+    </el-menu-item>
+    <el-menu-item index="/login">
+      <template #title>
+        <i class="el-icon-user"></i>
+        <span>登录页</span>
+      </template>
+    </el-menu-item>
+  </el-menu>
+</template>
+
+<script setup lang="ts"></script>
+
+<style scoped>
+.sidebar-menu {
+  border: none;
+}
+.el-menu-item {
+  margin: 5px 12px;
+}
+</style>
