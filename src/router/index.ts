@@ -20,6 +20,16 @@ const routes = [
         path: 'users',
         name: 'UserList',
         component: () => import('../views/UserList.vue')
+      },
+      {
+        path: 'check-types',
+        name: 'CheckTypeList',
+        component: () => import('../views/CheckTypeList.vue')
+      },
+      {
+        path: 'image-resources',
+        name: 'ImageResourceList',
+        component: () => import('../views/ImageResourceList.vue')
       }
     ]
   },

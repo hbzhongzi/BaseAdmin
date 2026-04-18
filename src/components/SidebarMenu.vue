@@ -25,6 +25,18 @@
         <span>用户管理</span>
       </template>
     </el-menu-item>
+    <el-menu-item index="/check-types">
+      <template #title>
+        <i class="el-icon-document"></i>
+        <span>打卡类型</span>
+      </template>
+    </el-menu-item>
+    <el-menu-item index="/image-resources">
+      <template #title>
+        <i class="el-icon-picture"></i>
+        <span>图片资源</span>
+      </template>
+    </el-menu-item>
     <el-menu-item index="/login">
       <template #title>
         <i class="el-icon-user"></i>
