@@ -9,10 +9,22 @@ export async function request(url, options = {}) {
     if (token) {
         headers.set('authadmintoken', token);
     }
-    if (data !== undefined && !headers.has('Content-Type')) {
-        headers.set('Content-Type', 'application/json');
+    let body;
+    if (data !== undefined) {
+        if (data instanceof FormData) {
+            // FormData 不需要设置 Content-Type，浏览器会自动设置 multipart/form-data
+            body = data;
+        }
+        else {
+            if (!headers.has('Content-Type')) {
+                headers.set('Content-Type', 'application/json');
+            }
+            body = JSON.stringify(data);
+        }
     }
-    const body = data !== undefined ? JSON.stringify(data) : rest.body;
+    else {
+        body = rest.body;
+    }
     const response = await fetch(`${BASE_URL}${url}`, {
         ...rest,
         headers,

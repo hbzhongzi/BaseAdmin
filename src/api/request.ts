@@ -17,11 +17,21 @@ export async function request<T = any>(url: string, options: RequestOptions = {}
     headers.set('authadmintoken', token);
   }
 
-  if (data !== undefined && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
-  }
+  let body: BodyInit | null | undefined;
 
-  const body = data !== undefined ? JSON.stringify(data) : rest.body;
+  if (data !== undefined) {
+    if (data instanceof FormData) {
+      // FormData 不需要设置 Content-Type，浏览器会自动设置 multipart/form-data
+      body = data;
+    } else {
+      if (!headers.has('Content-Type')) {
+        headers.set('Content-Type', 'application/json');
+      }
+      body = JSON.stringify(data);
+    }
+  } else {
+    body = rest.body;
+  }
 
   const response = await fetch(`${BASE_URL}${url}`, {
     ...rest,
