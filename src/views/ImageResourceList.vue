@@ -50,7 +50,11 @@
           <span>{{ formatSize(row.size) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="user_id" label="用户ID" width="100" />
+      <el-table-column label="创建者" width="100">
+        <template #default="{ row }">
+          <span>{{ row.user_id === 0 ? '管理员' : `用户${row.user_id}` }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="create_time" label="创建时间" width="180" />
     </el-table>
 

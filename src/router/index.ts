@@ -8,8 +8,7 @@ const routes = [
     children: [
       {
         path: '',
-        name: 'Dashboard',
-        component: () => import('../views/Dashboard.vue')
+        redirect: '/events'
       },
       {
         path: 'events',
@@ -35,6 +34,11 @@ const routes = [
         path: 'member-packages',
         name: 'MemberPackageList',
         component: () => import('../views/MemberPackageList.vue')
+      },
+      {
+        path: 'check-rules',
+        name: 'CheckRuleList',
+        component: () => import('../views/CheckRuleList.vue')
       }
     ]
   },

@@ -21,7 +21,12 @@ MemoryAdmin/
     ├── router/
     │   └── index.ts
     ├── views/
-    │   ├── Dashboard.vue
+    │   ├── EventList.vue
+    │   ├── UserList.vue
+    │   ├── CheckTypeList.vue
+    │   ├── CheckRuleList.vue
+    │   ├── ImageResourceList.vue
+    │   ├── MemberPackageList.vue
     │   └── Login.vue
     ├── App.vue
     ├── env.d.ts
@@ -41,7 +46,8 @@ pnpm dev
 - `main.ts` 中引入 `element-plus` 样式并注册插件
 - `router/index.ts` 中配置路由
 - `TheLayout.vue` 中实现后台常见布局：侧边栏 + 头部 + 内容区域
-- `Dashboard.vue` 和 `Login.vue` 为演示页面
+- 各管理页面为具体业务模块：事件管理、用户管理、打卡类型、打卡规则、图片资源、会员套餐
+- `Login.vue` 为登录页面
 
 ## 说明
 

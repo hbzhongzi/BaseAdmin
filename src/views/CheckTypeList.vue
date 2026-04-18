@@ -44,14 +44,18 @@
           />
         </template>
       </el-table-column>
-      <el-table-column prop="default_rule_id" label="关联规则ID" width="120" />
+      <el-table-column prop="default_rule_id" label="默认规则ID" width="120" />
       <el-table-column label="来源" width="120">
         <template #default="{ row }">
           <el-tag type="info" v-if="row.type_source === 1">系统</el-tag>
           <el-tag type="warning" v-else>用户</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="user_id" label="用户ID" width="100" />
+      <el-table-column label="创建者" width="100">
+        <template #default="{ row }">
+          <span>{{ row.user_id === 0 ? '管理员' : `用户${row.user_id}` }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" width="100">
         <template #default="{ row }">
           <el-tag type="success" v-if="row.status === 1">启用</el-tag>

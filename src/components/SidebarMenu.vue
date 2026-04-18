@@ -1,18 +1,12 @@
 <template>
   <el-menu
-    default-active="Dashboard"
+    default-active="/events"
     class="sidebar-menu"
     background-color="transparent"
     text-color="#ccc"
     active-text-color="#fff"
     router
   >
-    <el-menu-item index="/">
-      <template #title>
-        <i class="el-icon-menu"></i>
-        <span>仪表盘</span>
-      </template>
-    </el-menu-item>
     <el-menu-item index="/events">
       <template #title>
         <i class="el-icon-date"></i>
@@ -43,10 +37,10 @@
         <span>会员套餐</span>
       </template>
     </el-menu-item>
-    <el-menu-item index="/login">
+    <el-menu-item index="/check-rules">
       <template #title>
-        <i class="el-icon-user"></i>
-        <span>登录页</span>
+        <i class="el-icon-document-checked"></i>
+        <span>打卡规则</span>
       </template>
     </el-menu-item>
   </el-menu>
