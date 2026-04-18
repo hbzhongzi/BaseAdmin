@@ -37,6 +37,12 @@
         <span>图片资源</span>
       </template>
     </el-menu-item>
+    <el-menu-item index="/member-packages">
+      <template #title>
+        <i class="el-icon-price-tag"></i>
+        <span>会员套餐</span>
+      </template>
+    </el-menu-item>
     <el-menu-item index="/login">
       <template #title>
         <i class="el-icon-user"></i>

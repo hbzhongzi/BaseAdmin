@@ -30,6 +30,11 @@ const routes = [
         path: 'image-resources',
         name: 'ImageResourceList',
         component: () => import('../views/ImageResourceList.vue')
+      },
+      {
+        path: 'member-packages',
+        name: 'MemberPackageList',
+        component: () => import('../views/MemberPackageList.vue')
       }
     ]
   },
