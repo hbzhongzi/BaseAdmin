@@ -21,10 +21,55 @@ export interface CheckRuleListResponse {
   page_size: number;
 }
 
+export interface ApiResult<T = any> {
+  code: number;
+  msg: string;
+  data: T;
+}
+
 export async function listCheckRules(params: Record<string, unknown> = {}): Promise<CheckRuleListResponse> {
-  const res = await request<{ code: number; msg: string; data: CheckRuleListResponse }>('/admin/CheckRuleController/list', {
+  const res = await request<ApiResult<CheckRuleListResponse>>('/admin/CheckRuleController/list', {
     method: 'POST',
     data: params
   });
+
+  if (res.code !== 1) {
+    throw new Error(res.msg || '获取打卡规则列表失败');
+  }
+
   return res.data;
+}
+
+export async function addCheckRule(data: Partial<CheckRuleItem>): Promise<void> {
+  const res = await request<ApiResult>('/admin/CheckRuleController/create', {
+    method: 'POST',
+    data
+  });
+
+  if (res.code !== 1) {
+    throw new Error(res.msg || '新增打卡规则失败');
+  }
+}
+
+export async function editCheckRule(id: number, data: Partial<CheckRuleItem>): Promise<void> {
+  const res = await request<ApiResult>('/admin/CheckRuleController/update', {
+    method: 'POST',
+    data: { id, ...data }
+  });
+
+  if (res.code !== 1) {
+    throw new Error(res.msg || '编辑打卡规则失败');
+  }
+}
+
+
+export async function deleteCheckRule(id: number): Promise<void> {
+  const res = await request<ApiResult>('/admin/CheckRuleController/delete', {
+    method: 'POST',
+    data: { id }
+  });
+
+  if (res.code !== 1) {
+    throw new Error(res.msg || '删除打卡规则失败');
+  }
 }
