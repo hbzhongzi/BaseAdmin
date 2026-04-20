@@ -27,16 +27,6 @@ export async function editMemberPackage(id, data) {
         throw new Error(res.msg || '编辑会员套餐失败');
     }
 }
-export async function detailMemberPackage(id) {
-    const res = await request('/admin/MemberPackageController/detail', {
-        method: 'GET',
-        data: { id }
-    });
-    if (res.code !== 1) {
-        throw new Error(res.msg || '获取会员套餐详情失败');
-    }
-    return res.data;
-}
 export async function deleteMemberPackage(id) {
     const res = await request('/admin/MemberPackageController/delete', {
         method: 'POST',

@@ -27,16 +27,6 @@ export async function editCheckRule(id, data) {
         throw new Error(res.msg || '编辑打卡规则失败');
     }
 }
-export async function detailCheckRule(id) {
-    const res = await request('/admin/CheckRuleController/detail', {
-        method: 'GET',
-        data: { id }
-    });
-    if (res.code !== 1) {
-        throw new Error(res.msg || '获取打卡规则详情失败');
-    }
-    return res.data;
-}
 export async function deleteCheckRule(id) {
     const res = await request('/admin/CheckRuleController/delete', {
         method: 'POST',
