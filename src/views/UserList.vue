@@ -5,9 +5,9 @@
         <el-form-item label="用户ID">
           <el-input v-model="filter.user_id" placeholder="输入用户ID" style="width: 150px" clearable />
         </el-form-item>
-        <el-form-item label="用户名">
+        <!-- <el-form-item label="用户名">
           <el-input v-model="filter.user_name" placeholder="输入用户名" clearable />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="状态">
           <el-select v-model="filter.status" style="width: 120px">
             <el-option label="全部" value="" />
@@ -95,7 +95,7 @@ const total = ref(0);
 
 const filter = reactive({
   user_id: '',
-  user_name: '',
+  // user_name: '',
   status: '',
   is_vip: '',
   is_follow: '',

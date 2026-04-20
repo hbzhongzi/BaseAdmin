@@ -31,7 +31,7 @@
           <span>{{ row.is_admin ? '管理员' : row.user_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="is_deuplicate" label="重复类型" />
+      <el-table-column prop="is_deuplicate_name" label="重复类型" />
 
       <el-table-column label="图片" width="120">
         <template #default="{ row }">
@@ -207,8 +207,19 @@ const rules = {
 };
 
 const normalizeReminderConfig = (value: Array<string | number>) => {
-  const config = Array.isArray(value) ? value.map(Number) : [];
+  const config = Array.isArray(value) ? value.map((item) => Number(item)) : [];
   return config.includes(0) ? [0] : config.filter((v) => v !== 0);
+};
+
+const formatReminderConfigForForm = (value: unknown) => {
+  const config = Array.isArray(value)
+    ? value
+    : typeof value === 'string'
+    ? value.split(',')
+    : [];
+
+  const mapped = config.map((item) => String(item));
+  return mapped.includes('0') ? ['0'] : mapped.filter((item) => item !== '0');
 };
 
 const beforeUpload = (file: File) => {
@@ -304,12 +315,21 @@ const openDialog = (row?: any) => {
       event_name: row.event_name,
       event_image: row.event_image,
       event_time: row.event_time,
-      reminder_config: normalizeReminderConfig(row.reminder_config ?? [])
+      is_deuplicate: String(row.is_deuplicate ?? 0),
+      reminder_config: formatReminderConfigForForm(row.reminder_config ?? [])
     });
   } else {
     isEdit.value = false;
     dialogTitle.value = "新增事件";
     currentId.value = null;
+
+    Object.assign(form, {
+      event_name: "",
+      event_image: "",
+      event_time: "",
+      is_deuplicate: "0",
+      reminder_config: []
+    });
   }
 
   dialogVisible.value = true;
