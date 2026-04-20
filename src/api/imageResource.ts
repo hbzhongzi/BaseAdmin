@@ -24,3 +24,39 @@ export async function listImageResources(params: Record<string, unknown> = {}): 
   });
   return res.data;
 }
+
+export interface UploadImageParams {
+  file: File;
+  type?: number;
+  name?: string;
+  sort?: number;
+}
+
+export interface UploadImageResponse {
+  url: string;
+  [key: string]: any;
+}
+
+export async function uploadImage(params: UploadImageParams): Promise<UploadImageResponse> {
+  const formData = new FormData();
+  formData.append('file', params.file);
+  if (params.type !== undefined) formData.append('type', params.type.toString());
+  if (params.name) formData.append('name', params.name);
+  if (params.sort !== undefined) formData.append('sort', params.sort.toString());
+
+  const res = await request<{ code: number; msg: string; data: UploadImageResponse }>('/admin/UploadController/image', {
+    method: 'POST',
+    data: formData
+  });
+  return res.data;
+}
+
+export async function deleteImageResource(id: number): Promise<void> {
+  const res = await request<{ code: number; msg: string }>('/admin/UploadController/delete', {
+    method: 'POST',
+    data: { id }
+  });
+  if (res.code !== 1) {
+    throw new Error(res.msg || '删除失败');
+  }
+}

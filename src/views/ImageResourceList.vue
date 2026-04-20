@@ -22,6 +22,7 @@
     </div>
 
     <div class="toolbar">
+      <el-button type="primary" @click="openUploadDialog">上传图片</el-button>
       <el-button type="primary" @click="fetchList">刷新列表</el-button>
     </div>
 
@@ -56,6 +57,13 @@
         </template>
       </el-table-column>
       <el-table-column prop="create_time" label="创建时间" width="180" />
+      <el-table-column label="操作" width="120">
+        <template #default="{ row }">
+          <el-button size="small" type="danger" @click="handleDelete(row)">
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <el-pagination
@@ -67,17 +75,68 @@
       @current-change="handlePageChange"
       class="pagination"
     />
+
+    <!-- 上传弹窗 -->
+    <el-dialog title="上传图片" v-model="uploadDialogVisible" width="500px">
+      <el-form :model="uploadForm" :rules="uploadRules" ref="uploadFormRef" label-width="100px">
+        <el-form-item label="图片文件" prop="file">
+          <el-upload
+            ref="uploadRef"
+            :on-change="handleFileChange"
+            :on-remove="handleFileRemove"
+            :auto-upload="false"
+            :show-file-list="true"
+            accept="image/*"
+            :limit="1"
+          >
+            <el-button type="primary">选择文件</el-button>
+            <template #tip>
+              <div class="el-upload__tip">只能上传图片文件，且不超过 2MB</div>
+            </template>
+          </el-upload>
+        </el-form-item>
+
+        <el-form-item label="图片类型" prop="type">
+          <el-select v-model="uploadForm.type" placeholder="请选择类型">
+            <el-option label="背景图" :value="1" />
+            <el-option label="打卡图标" :value="2" />
+            <el-option label="纪念图" :value="3" />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="图片名称" prop="name">
+          <el-input v-model="uploadForm.name" placeholder="请输入图片名称" />
+        </el-form-item>
+
+        <el-form-item label="排序" prop="sort">
+          <el-input-number v-model="uploadForm.sort" :min="0" />
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <el-button @click="uploadDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleUpload" :loading="uploading">
+          上传
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
-import { listImageResources, ImageResourceItem } from '../api/imageResource';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { listImageResources, uploadImage, deleteImageResource, ImageResourceItem } from '../api/imageResource';
 
 const list = ref<ImageResourceItem[]>([]);
 const loading = ref(false);
 const total = ref(0);
+
+// 上传相关状态
+const uploadDialogVisible = ref(false);
+const uploading = ref(false);
+const uploadFormRef = ref();
+const uploadRef = ref();
 
 const filter = reactive({
   type: '',
@@ -86,6 +145,22 @@ const filter = reactive({
   page: 1,
   page_size: 10
 });
+
+// 上传表单
+const uploadForm = reactive({
+  file: null as File | null,
+  type: 1,
+  name: '',
+  sort: 0,
+});
+
+// 上传表单验证规则
+const uploadRules = {
+  file: [{ required: true, message: '请选择要上传的图片文件', trigger: 'change' }],
+  type: [{ required: true, message: '请选择图片类型', trigger: 'change' }],
+  name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
+  sort: [{ required: true, message: '请输入排序值', trigger: 'blur' }],
+};
 
 const fetchList = async () => {
   loading.value = true;
@@ -125,6 +200,82 @@ const handlePageChange = (page: number) => {
 const formatSize = (size: number) => {
   if (!size) return '0 KB';
   return size < 1024 ? `${size} B` : `${(size / 1024).toFixed(1)} KB`;
+};
+
+// 打开上传弹窗
+const openUploadDialog = () => {
+  uploadForm.file = null;
+  uploadForm.type = 1;
+  uploadForm.name = '';
+  uploadForm.sort = 0;
+  uploadDialogVisible.value = true;
+  uploadFormRef.value?.resetFields();
+  uploadRef.value?.clearFiles();
+};
+
+// 文件选择处理
+const handleFileChange = (file: any, fileList: any[]) => {
+  if (fileList.length > 0) {
+    uploadForm.file = file.raw;
+  } else {
+    uploadForm.file = null;
+  }
+};
+
+// 文件移除处理
+const handleFileRemove = () => {
+  uploadForm.file = null;
+};
+
+// 上传处理
+const handleUpload = async () => {
+  await uploadFormRef.value.validate();
+
+  if (!uploadForm.file) {
+    ElMessage.error('请选择要上传的文件');
+    return;
+  }
+
+  // 检查文件大小 (2MB)
+  if (uploadForm.file.size > 2 * 1024 * 1024) {
+    ElMessage.error('图片大小不能超过 2MB!');
+    return;
+  }
+
+  uploading.value = true;
+  try {
+    await uploadImage({
+      file: uploadForm.file,
+      type: uploadForm.type,
+      name: uploadForm.name,
+      sort: uploadForm.sort,
+    });
+
+    ElMessage.success('上传成功');
+    uploadDialogVisible.value = false;
+    fetchList();
+  } catch (error) {
+    ElMessage.error('上传失败');
+  } finally {
+    uploading.value = false;
+  }
+};
+
+// 删除处理
+const handleDelete = async (row: ImageResourceItem) => {
+  await ElMessageBox.confirm('确认删除这张图片吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  });
+
+  try {
+    await deleteImageResource(row.id);
+    ElMessage.success('删除成功');
+    fetchList();
+  } catch (error) {
+    ElMessage.error('删除失败');
+  }
 };
 
 onMounted(fetchList);

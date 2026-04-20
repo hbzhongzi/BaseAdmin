@@ -136,10 +136,9 @@ const form = reactive({
 
 // ✅ 表单校验
 const rules = {
-  name: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
+  check_rule_name: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
   type: [{ required: true, message: "请选择执行类型", trigger: "change" }],
   frequency: [{ required: true, message: "请输入每日频率", trigger: "blur" }],
-
 };
 
 const weekDayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
@@ -199,12 +198,10 @@ const openDialog = (row?: any) => {
     currentId.value = row.id;
 
     Object.assign(form, {
-      name: row.name,
+      check_rule_name: row.name,
       type: row.type,
       week_days_arr: row.week_days_arr || [],
       frequency: row.frequency,
-      start_time: row.start_time,
-      end_time: row.end_time
     });
   } else {
     isEdit.value = false;
@@ -216,8 +213,6 @@ const openDialog = (row?: any) => {
       type: 1,
       week_days_arr: [],
       frequency: 1,
-      start_time: '',
-      end_time: ''
     });
   }
 
@@ -230,8 +225,10 @@ const submitForm = async () => {
 
   try {
     const payload = {
-      ...form,
-      week_days: form.week_days_arr.join(',')
+      name: form.check_rule_name,
+      type: form.type,
+      week_days: form.week_days_arr.join(','),
+      frequency: form.frequency,
     };
 
     if (isEdit.value) {
