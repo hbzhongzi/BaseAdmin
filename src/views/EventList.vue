@@ -31,6 +31,7 @@
           <span>{{ row.is_admin ? '管理员' : row.user_id }}</span>
         </template>
       </el-table-column>
+      <el-table-column prop="is_deuplicate" label="重复类型" />
 
       <el-table-column label="图片" width="120">
         <template #default="{ row }">
@@ -66,6 +67,15 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="名称" prop="event_name">
           <el-input v-model="form.event_name" />
+        </el-form-item>
+
+        <el-form-item label="重复类型" prop="is_deuplicate">
+          <el-select v-model="form.is_deuplicate" placeholder="请选择">
+            <el-option label="不重复" value="0" />
+            <el-option label="每周" value="1" />
+            <el-option label="每月" value="3" />
+            <el-option label="每年" value="2" />
+          </el-select>
         </el-form-item>
 
         <el-form-item label="图片">
@@ -186,6 +196,7 @@ const form = reactive({
   event_name: "",
   event_image: "",
   event_time: "",
+  is_deuplicate: "" as string,
   reminder_config: [] as number[]
 });
 
