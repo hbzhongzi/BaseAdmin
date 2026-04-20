@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import TheLayout from '../layout/TheLayout.vue';
+import { AUTH_TOKEN_KEY } from '../api/request';
 const routes = [
     {
         path: '/',
@@ -48,17 +49,20 @@ const routes = [
     }
 ];
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory('/admin/'), // ⚠️ 添加 base 参数
     routes
 });
 router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('authadmintoken');
-    if (to.path !== '/login' && !token) {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (!token && to.path !== '/login') {
         next('/login');
+        return;
     }
-    else {
-        next();
+    if (token && to.path === '/login') {
+        next('/');
+        return;
     }
+    next();
 });
 export default router;
 //# sourceMappingURL=index.js.map

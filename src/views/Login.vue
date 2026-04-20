@@ -22,6 +22,7 @@ import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { login } from '../api/auth';
+import { AUTH_TOKEN_KEY } from '../api/request';
 
 const router = useRouter();
 const form = reactive({
@@ -51,7 +52,7 @@ const handleLogin = async () => {
       throw new Error(result.message || '登录失败，未返回 token');
     }
 
-    localStorage.setItem('authadmintoken', token);
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
     ElMessage.success('登录成功');
     await router.push('/');
   } catch (error) {

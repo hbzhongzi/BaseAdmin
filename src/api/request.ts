@@ -1,11 +1,25 @@
 const BASE_URL = 'http://memory:1000';
+export const AUTH_TOKEN_KEY = 'authadmintoken';
 
 export interface RequestOptions extends RequestInit {
   data?: unknown;
 }
 
 export function getAuthToken(): string | null {
-  return localStorage.getItem('authadmintoken');
+  return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+export function removeAuthToken(): void {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+}
+
+function redirectToLogin(): void {
+  removeAuthToken();
+  if (typeof window !== 'undefined') {
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
+  }
 }
 
 export async function request<T = any>(url: string, options: RequestOptions = {}): Promise<T> {
@@ -14,7 +28,7 @@ export async function request<T = any>(url: string, options: RequestOptions = {}
   const token = getAuthToken();
 
   if (token) {
-    headers.set('authadmintoken', token);
+    headers.set(AUTH_TOKEN_KEY, token);
   }
 
   let body: BodyInit | null | undefined;
@@ -39,9 +53,33 @@ export async function request<T = any>(url: string, options: RequestOptions = {}
     body
   });
 
-  if (!response.ok) {
-    throw new Error(`请求失败：${response.status} ${response.statusText}`);
+  const responseText = await response.text();
+  let responseBody: any = responseText;
+  try {
+    responseBody = responseText ? JSON.parse(responseText) : null;
+  } catch {
+    responseBody = responseText;
   }
 
-  return response.json();
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      redirectToLogin();
+      throw new Error(responseBody?.message || '身份已过期，请重新登录');
+    }
+    throw new Error(responseBody?.message || `请求失败：${response.status} ${response.statusText}`);
+  }
+
+  if (
+    responseBody &&
+    typeof responseBody === 'object' &&
+    (responseBody.code === 401 ||
+      responseBody.code === 403 ||
+      responseBody.status === 401 ||
+      responseBody.status === 403)
+  ) {
+    redirectToLogin();
+    throw new Error(responseBody?.message || '身份已过期，请重新登录');
+  }
+
+  return responseBody as T;
 }

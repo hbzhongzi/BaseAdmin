@@ -32,11 +32,12 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessageBox } from 'element-plus';
 import SidebarMenu from '../components/SidebarMenu.vue';
+import { AUTH_TOKEN_KEY } from '../api/request';
 
 const router = useRouter();
 
 const isLoggedIn = computed(() => {
-  return !!localStorage.getItem('authadmintoken');
+  return !!localStorage.getItem(AUTH_TOKEN_KEY);
 });
 
 const handleLogout = async () => {
@@ -46,7 +47,7 @@ const handleLogout = async () => {
     type: 'warning',
   });
 
-  localStorage.removeItem('authadmintoken');
+  localStorage.removeItem(AUTH_TOKEN_KEY);
   router.push('/login');
 };
 </script>
