@@ -225,7 +225,7 @@ const submitForm = async () => {
 
   try {
     const payload = {
-      name: form.check_rule_name,
+      check_rule_name: form.check_rule_name,
       type: form.type,
       week_days: form.week_days_arr.join(','),
       frequency: form.frequency,
