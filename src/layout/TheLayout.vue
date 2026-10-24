@@ -1,25 +1,105 @@
 <template>
-  <el-container style="height: 100vh;">
-    <el-aside width="240px" class="app-aside">
+  <!-- 布局预设 class（layout-*）由 useTheme 驱动，皮肤变量见 src/theme/tokens.css -->
+  <el-container class="app-shell" :class="`layout-${layout}`">
+    <!-- 侧栏布局：经典深色 / 经典浅色 / 现代极简卡片 -->
+    <el-aside v-if="showSide" :width="asideWidth" class="app-aside">
       <div class="brand">
-        <i class="el-icon-s-home"></i>
-        MemoryAdmin
+        <el-icon><HomeFilled /></el-icon>
+        <span v-show="!sidebarCollapsed" class="brand-name">MemoryAdmin</span>
       </div>
-      <SidebarMenu />
+      <SidebarMenu :collapsed="sidebarCollapsed" />
     </el-aside>
+
+    <!-- 双栏混合：图标轨 + 二级菜单列 -->
+    <template v-if="layout === 'hybrid-dual'">
+      <el-aside width="64px" class="app-rail">
+        <div class="brand brand-rail">
+          <el-icon><HomeFilled /></el-icon>
+        </div>
+        <SidebarMenu mode="icon" />
+      </el-aside>
+      <el-aside width="200px" class="app-submenu">
+        <div class="submenu-title">导航菜单</div>
+        <SidebarMenu />
+      </el-aside>
+    </template>
 
     <el-container>
       <el-header class="app-header">
-        <div class="header-content">
-          <h3>后台管理系统</h3>
-          <div class="header-actions">
-            <el-button type="text" @click="handleLogout" v-if="isLoggedIn">
-              <i class="el-icon-switch-button"></i>
-              退出登录
+        <div class="header-left">
+          <el-tooltip
+            v-if="collapsible"
+            :content="sidebarCollapsed ? '展开侧栏' : '收起侧栏'"
+            placement="bottom"
+          >
+            <el-icon class="collapse-trigger" @click="toggleSidebar">
+              <Expand v-if="sidebarCollapsed" />
+              <Fold v-else />
+            </el-icon>
+          </el-tooltip>
+          <span v-if="layout === 'top-nav'" class="header-brand">MemoryAdmin</span>
+          <h3 v-else class="header-title">后台管理系统</h3>
+          <SidebarMenu v-if="layout === 'top-nav'" mode="horizontal" />
+        </div>
+
+        <div class="header-actions">
+          <!-- 布局切换 -->
+          <el-dropdown trigger="click" @command="setLayout">
+            <el-button type="text" class="theme-action">
+              <el-icon><Grid /></el-icon>
+              <span class="action-label">布局</span>
             </el-button>
-          </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item
+                  v-for="preset in layoutPresets"
+                  :key="preset.id"
+                  :command="preset.id"
+                  :disabled="preset.id === layout"
+                >
+                  <el-icon><component :is="preset.icon" /></el-icon>
+                  <span class="dropdown-label">{{ preset.label }}</span>
+                  <span class="dropdown-desc">{{ preset.description }}</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+
+          <!-- 主色切换 -->
+          <el-dropdown trigger="click" @command="setPrimary">
+            <el-button type="text" class="theme-action">
+              <el-icon><Brush /></el-icon>
+              <span class="action-label">配色</span>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item
+                  v-for="preset in primaryPresets"
+                  :key="preset.id"
+                  :command="preset.id"
+                  :disabled="preset.id === primary"
+                >
+                  <span class="color-dot" :style="{ background: preset.color }" />
+                  <span class="dropdown-label">{{ preset.label }}</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+
+          <!-- 深色模式 -->
+          <el-tooltip :content="dark ? '切换到浅色模式' : '切换到深色模式'" placement="bottom">
+            <el-button type="text" class="theme-action" @click="toggleDark">
+              <el-icon><Sunny v-if="dark" /><Moon v-else /></el-icon>
+            </el-button>
+          </el-tooltip>
+
+          <el-button type="text" @click="handleLogout" v-if="isLoggedIn">
+            <el-icon><SwitchButton /></el-icon>
+            退出登录
+          </el-button>
         </div>
       </el-header>
+
       <el-main class="app-main">
         <router-view />
       </el-main>
@@ -32,12 +112,37 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessageBox } from 'element-plus';
 import SidebarMenu from '../components/SidebarMenu.vue';
-import { AUTH_TOKEN_KEY } from '../api/request';
+import { logout } from '../api/auth';
+import { isAuthenticated } from '../auth/session';
+import { useTheme, LAYOUT_PRESETS, PRIMARY_PRESETS } from '../theme';
 
 const router = useRouter();
 
+const {
+  layout,
+  primary,
+  dark,
+  sidebarCollapsed,
+  setLayout,
+  setPrimary,
+  toggleDark,
+  toggleSidebar,
+} = useTheme();
+
+/** 是否渲染完整侧栏（顶栏菜单与双栏混合布局不用此结构） */
+const showSide = computed(
+  () => layout.value !== 'top-nav' && layout.value !== 'hybrid-dual',
+);
+
+/** 当前布局是否提供侧栏折叠（来自预设清单，不在此散落判断） */
+const collapsible = computed(
+  () => LAYOUT_PRESETS.find((preset) => preset.id === layout.value)?.collapsible ?? false,
+);
+
+const asideWidth = computed(() => (sidebarCollapsed.value ? '64px' : '240px'));
+
 const isLoggedIn = computed(() => {
-  return !!localStorage.getItem(AUTH_TOKEN_KEY);
+  return isAuthenticated.value;
 });
 
 const handleLogout = async () => {
@@ -47,87 +152,73 @@ const handleLogout = async () => {
     type: 'warning',
   });
 
-  localStorage.removeItem(AUTH_TOKEN_KEY);
-  router.push('/login');
+  try {
+    await logout();
+  } finally {
+    await router.push('/login');
+  }
 };
 </script>
 
 <style scoped>
-.app-aside {
-  background: linear-gradient(180deg, #304156 0%, #2b3742 100%);
-  color: #fff;
-  padding: 20px 0;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+/* 只放结构样式；颜色 / 圆角 / 阴影等皮肤一律走 src/theme/tokens.css 变量 */
+.app-shell {
+  height: 100vh;
 }
 
-.brand {
-  text-align: center;
-  color: #fff;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 30px;
+.header-left {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  min-width: 0;
 }
 
-.brand i {
-  font-size: 24px;
-  color: #409eff;
-}
-
-.app-header {
-  background: #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  border-bottom: 1px solid #e6e6e6;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.header-content h3 {
+.header-title {
   margin: 0;
-  color: #303133;
   font-size: 18px;
   font-weight: 500;
+}
+
+.header-brand {
+  font-size: 18px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.collapse-trigger {
+  margin-right: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-secondary);
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
+  margin-left: auto;
 }
 
-.app-main {
-  padding: 24px;
-  background: #f5f7fa;
-  overflow-y: auto;
+.theme-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .app-aside {
-    width: 200px !important;
-  }
+.color-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
 
-  .app-header {
-    padding: 0 16px;
-  }
+.dropdown-label {
+  margin-left: 8px;
+}
 
-  .header-content h3 {
-    font-size: 16px;
-  }
-
-  .app-main {
-    padding: 16px;
-  }
+.dropdown-desc {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 </style>

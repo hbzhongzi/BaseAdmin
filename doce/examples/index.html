@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MemoryAdmin 布局风格画廊</title>
+<style>
+:root{
+  --primary:#409eff;--primary-soft:#ecf5ff;--primary-deep:#337ecc;
+  --bg:#f2f3f7;--card:#fff;--text:#1f2329;--text-sub:#8a919f;--border:#e5e6eb;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+.wrap{max-width:1180px;margin:0 auto;padding:44px 28px 64px;}
+.hero{margin-bottom:32px;}
+.kicker{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--primary);background:var(--primary-soft);padding:4px 12px;border-radius:99px;margin-bottom:14px;}
+.hero h1{font-size:28px;margin-bottom:10px;letter-spacing:.02em;}
+.hero p{color:var(--text-sub);max-width:780px;font-size:14px;}
+.hero .links{margin-top:12px;font-size:13px;display:flex;gap:18px;flex-wrap:wrap;}
+.hero .links a{color:var(--primary);text-decoration:none;}
+.hero .links a:hover{text-decoration:underline;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:22px;}
+.card-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .18s ease,box-shadow .18s ease;display:flex;flex-direction:column;}
+.card-item:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(31,35,41,.12);}
+.thumb{height:172px;position:relative;overflow:hidden;background:#eef0f4;display:flex;border-bottom:1px solid var(--border);}
+.card-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1;}
+.card-title{display:flex;align-items:center;gap:8px;}
+.card-title h3{font-size:16px;}
+.tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--primary-soft);color:var(--primary);}
+.card-body p{font-size:13px;color:var(--text-sub);}
+.tags{display:flex;gap:6px;flex-wrap:wrap;}
+.tags span{font-size:11px;color:var(--text-sub);background:#f2f3f5;border-radius:6px;padding:2px 8px;}
+.open-btn{margin-top:auto;align-self:flex-start;text-decoration:none;font-size:13px;font-weight:600;color:#fff;background:var(--primary);padding:8px 16px;border-radius:8px;transition:background .15s;}
+.open-btn:hover{background:var(--primary-deep);}
+/* ---------- 线框图 ---------- */
+.wire{width:100%;height:100%;display:flex;background:#f6f7f9;}
+.w-side{width:24%;padding:10px 8px;display:flex;flex-direction:column;gap:7px;}
+.w-side .w-brand{height:12px;width:70%;border-radius:4px;margin-bottom:8px;}
+.w-side i{height:9px;width:88%;border-radius:4px;display:block;}
+.w-side i.on{width:96%;}
+.w-main{flex:1;display:flex;flex-direction:column;}
+.w-top{height:16px;margin:8px;border-radius:5px;}
+.w-body{flex:1;margin:0 8px 8px;border-radius:6px;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:min-content;gap:6px;}
+.w-body b{border-radius:5px;height:22px;display:block;}
+.w-body b.wide{grid-column:span 2;height:44px;}
+.w-body b.full{grid-column:span 4;height:44px;}
+/* 经典深色 */
+.wire .w-side.dark{background:linear-gradient(180deg,#304156,#2b3742);}
+.wire .w-side.dark .w-brand{background:#5b6d82;}
+.wire .w-side.dark i{background:#3d4c5e;}
+.wire .w-side.dark i.on{background:var(--primary);}
+.wire .w-top.dark{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.wire .w-body.dark{background:#eef1f5;}
+.wire .w-body.dark b{background:#fff;}
+/* 经典浅色 */
+.wire .w-side.light{background:#fff;border-right:1px solid #e5e6eb;}
+.wire .w-side.light .w-brand{background:#c9ced6;}
+.wire .w-side.light i{background:#eef0f3;}
+.wire .w-side.light i.on{background:var(--primary-soft);box-shadow:inset 2px 0 0 var(--primary);}
+.wire .w-top.light{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.wire .w-body.light{background:#f5f7fa;}
+.wire .w-body.light b{background:#fff;}
+/* 顶部菜单 */
+.wire.top{flex-direction:column;}
+.wire.top .w-topbar{height:34px;margin:8px 8px 0;border-radius:6px;background:linear-gradient(90deg,#304156,#3a4a5e);display:flex;align-items:center;padding:0 10px;gap:8px;}
+.wire.top .w-topbar .lg{height:9px;width:34px;border-radius:3px;background:#5b6d82;}
+.wire.top .w-topbar i{height:8px;width:26px;border-radius:3px;background:#4a5a6d;display:block;}
+.wire.top .w-topbar i.on{background:var(--primary);}
+.wire.top .w-body{background:#f5f7fa;margin:8px;}
+.wire.top .w-body b{background:#fff;}
+/* 双栏混合 */
+.wire.dual .w-rail{width:13%;background:linear-gradient(180deg,#2b3742,#232c36);display:flex;flex-direction:column;align-items:center;padding-top:10px;gap:9px;}
+.wire.dual .w-rail i{height:11px;width:52%;border-radius:4px;background:#3d4c5e;display:block;}
+.wire.dual .w-rail i.on{background:var(--primary);}
+.wire.dual .w-sub{width:20%;background:#fff;border-right:1px solid #e5e6eb;display:flex;flex-direction:column;gap:7px;padding:10px 8px;}
+.wire.dual .w-sub .w-brand{height:11px;width:64%;border-radius:4px;background:#c9ced6;margin-bottom:6px;}
+.wire.dual .w-sub i{height:9px;width:88%;border-radius:4px;background:#eef0f3;display:block;}
+.wire.dual .w-sub i.on{background:var(--primary-soft);box-shadow:inset 2px 0 0 var(--primary);}
+.wire.dual .w-top{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.wire.dual .w-body{background:#f5f7fa;}
+.wire.dual .w-body b{background:#fff;}
+/* 极简卡片 */
+.wire.mini{background:#f6f7fb;padding:8px;gap:8px;}
+.wire.mini .w-side.light{border-radius:12px;box-shadow:0 4px 14px rgba(31,35,41,.06);width:26%;}
+.wire.mini .w-body{background:transparent;margin:0;padding:0;align-content:start;}
+.wire.mini .w-body b{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(31,35,41,.05);height:30px;}
+.wire.mini .w-body b.wide{height:52px;}
+.wire.mini .w-body b.full{height:52px;}
+.wire.mini .w-top{background:transparent;box-shadow:none;margin:0 0 2px;}
+/* 深色模式 */
+.wire.darkmode{background:#101014;}
+.wire.darkmode .w-side{background:#16171d;border-right:1px solid #26272f;}
+.wire.darkmode .w-side .w-brand{background:#3a3d47;}
+.wire.darkmode .w-side i{background:#23252d;}
+.wire.darkmode .w-side i.on{background:var(--primary);}
+.wire.darkmode .w-top{background:#1c1d24;border:1px solid #26272f;}
+.wire.darkmode .w-body{background:transparent;}
+.wire.darkmode .w-body b{background:#1c1d24;border:1px solid #26272f;}
+/* 页脚说明 */
+.footer{margin-top:36px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;}
+.footer h4{font-size:14px;margin-bottom:10px;}
+.footer ol{margin-left:18px;font-size:13px;color:var(--text-sub);display:grid;gap:6px;}
+.footer code{background:#f2f3f5;border-radius:4px;padding:1px 6px;font-size:12px;color:var(--text);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <span class="kicker">LAYOUT GALLERY</span>
+    <h1>MemoryAdmin 布局风格画廊</h1>
+    <p>同一套后台内容（工作台、统计卡、图表、列表）在 6 种布局风格下的静态原型。打开任一风格页可实时切换主色（选择会写入 localStorage），用于比选后确定落地风格。选定后按 <code>doce/themes.md</code> 的规范实现为设计令牌与布局预设。</p>
+    <div class="links">
+      <a href="../themes.md">📄 themes.md 主题规范</a>
+      <a href="../README.md">📚 文档索引</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card-item">
+      <div class="thumb"><div class="wire">
+        <div class="w-side dark"><span class="w-brand"></span><i></i><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="w-main"><div class="w-top dark"></div><div class="w-body dark"><b></b><b></b><b></b><b></b><b class="wide"></b><b class="wide"></b></div></div>
+      </div></div>
+      <div class="card-body">
+        <div class="card-title"><h3>经典深色侧栏</h3><span class="tag">默认风格</span></div>
+        <p>深色渐变侧栏 + 白色顶栏，层级清晰，最贴近传统后台操作习惯。</p>
+        <div class="tags"><span>侧边栏</span><span>240px</span><span>信息密度高</span></div>
+        <a class="open-btn" href="./classic-dark.html">打开预览 →</a>
+      </div>
+    </div>
+
+    <div class="card-item">
+      <div class="thumb"><div class="wire">
+        <div class="w-side light"><span class="w-brand"></span><i></i><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="w-main"><div class="w-top light"></div><div class="w-body light"><b></b><b></b><b></b><b></b><b class="wide"></b><b class="wide"></b></div></div>
+      </div></div>
+      <div class="card-body">
+        <div class="card-title"><h3>经典浅色侧栏</h3></div>
+        <p>白色侧栏 + 左侧主色指示条，整体明亮轻快，适合内容型后台。</p>
+        <div class="tags"><span>侧边栏</span><span>240px</span><span>明亮</span></div>
+        <a class="open-btn" href="./classic-light.html">打开预览 →</a>
+      </div>
+    </div>
+
+    <div class="card-item">
+      <div class="thumb"><div class="wire top">
+        <div class="w-topbar"><span class="lg"></span><i></i><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="w-body"><b></b><b></b><b></b><b></b><b class="wide"></b><b class="wide"></b></div>
+      </div></div>
+      <div class="card-body">
+        <div class="card-title"><h3>顶部横向菜单</h3></div>
+        <p>无侧边栏，一级菜单全部收纳进顶栏，内容区全宽，页面数量少时更简洁。</p>
+        <div class="tags"><span>顶栏</span><span>全宽内容</span><span>少菜单</span></div>
+        <a class="open-btn" href="./top-nav.html">打开预览 →</a>
+      </div>
+    </div>
+
+    <div class="card-item">
+      <div class="thumb"><div class="wire dual">
+        <div class="w-rail"><i></i><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="w-sub"><span class="w-brand"></span><i></i><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="w-main"><div class="w-top"></div><div class="w-body"><b></b><b></b><b></b><b></b><b class="wide"></b><b class="wide"></b></div></div>
+      </div></div>
+      <div class="card-body">
+        <div class="card-title"><h3>双栏混合</h3></div>
+        <p>左侧图标轨 + 二级展开菜单，菜单层级多时不占用过多横向空间。</p>
+        <div class="tags"><span>双栏</span><span>多级菜单</span><span>可折叠</span></div>
+        <a class="open-btn" href="./hybrid-dual.html">打开预览 →</a>
+      </div>
+    </div>
+
+    <div class="card-item">
+      <div class="thumb"><div class="wire mini">
+        <div class="w-side light"><span class="w-brand"></span><i></i><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="w-body"><b></b><b></b><b></b><b></b><b class="wide"></b><b class="wide"></b></div>
+      </div></div>
+      <div class="card-body">
+        <div class="card-title"><h3>现代极简卡片风</h3></div>
+        <p>大圆角、柔和阴影、彩色图标切片，视觉更轻，适合偏展示型的现代后台。</p>
+        <div class="tags"><span>卡片化</span><span>大圆角</span><span>柔和阴影</span></div>
+        <a class="open-btn" href="./compact-card.html">打开预览 →</a>
+      </div>
+    </div>
+
+    <div class="card-item">
+      <div class="thumb"><div class="wire darkmode">
+        <div class="w-side"><span class="w-brand"></span><i></i><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="w-main"><div class="w-top"></div><div class="w-body"><b></b><b></b><b></b><b></b><b class="wide"></b><b class="wide"></b></div></div>
+      </div></div>
+      <div class="card-body">
+        <div class="card-title"><h3>深色模式</h3><span class="tag">可叠加</span></div>
+        <p>整站深色表面 + 高对比文字，长时间值守场景更护眼，可与任一布局叠加。</p>
+        <div class="tags"><span>深色</span><span>护眼</span><span>模式叠加</span></div>
+        <a class="open-btn" href="./dark-mode.html">打开预览 →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <h4>使用方式</h4>
+    <ol>
+      <li>打开各风格页比选布局，页内右下角可切换主色（自动记忆到 <code>localStorage</code>，键名 <code>memory-admin:*</code>）。</li>
+      <li>确定风格后，按 <code>doce/themes.md</code> 规范落地：设计令牌（CSS 变量）→ 布局预设（<code>src/theme/</code>）→ 切换与持久化。</li>
+      <li>示例页为静态原型（无构建依赖），仅用于选型，不进入生产构建。</li>
+    </ol>
+  </div>
+</div>
+</body>
+</html>

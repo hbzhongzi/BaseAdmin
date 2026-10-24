@@ -1,0 +1,398 @@
+/* ==========================================================================
+ * MemoryAdmin 设计令牌（Design Tokens）
+ * --------------------------------------------------------------------------
+ * 三层主题模型第 1 层：颜色 / 圆角 / 间距 / 侧栏结构的唯一定义处。
+ *   - 组件（含 scoped 样式）禁止硬编码色值，一律引用本文件变量；
+ *   - Element Plus 通过覆盖 --el-* 系列变量换肤；
+ *   - 布局预设以「预设名 + class」挂在 TheLayout 根节点（src/layout/TheLayout.vue）；
+ *   - 深色模式以 html.dark 切换（EP 暗色变量随 main.ts 引入）。
+ * 维护与新增约定见 doce/themes.md「使用规范」。
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * 1. 主色板（html[data-primary] 切换，共 5 套）
+ *    每套含 EP 所需的 primary 及 light-3/5/7/8/9、dark-2 派生色。
+ * -------------------------------------------------------------------------- */
+html {
+  --primary: #409eff;
+  --primary-light-3: #79bbff;
+  --primary-light-5: #a0cfff;
+  --primary-light-7: #c6e2ff;
+  --primary-light-8: #d9ecff;
+  --primary-light-9: #ecf5ff;
+  --primary-dark-2: #337ecc;
+}
+
+html[data-primary="green"] {
+  --primary: #67c23a;
+  --primary-light-3: #95d475;
+  --primary-light-5: #b3e19d;
+  --primary-light-7: #d1edc4;
+  --primary-light-8: #e1f3d8;
+  --primary-light-9: #f0f9eb;
+  --primary-dark-2: #529b2e;
+}
+
+html[data-primary="orange"] {
+  --primary: #e6a23c;
+  --primary-light-3: #edbe76;
+  --primary-light-5: #f2d09d;
+  --primary-light-7: #f7e3c4;
+  --primary-light-8: #faecd8;
+  --primary-light-9: #fdf6ec;
+  --primary-dark-2: #b88230;
+}
+
+html[data-primary="purple"] {
+  --primary: #7c3aed;
+  --primary-light-3: #a375f2;
+  --primary-light-5: #bd9cf6;
+  --primary-light-7: #d8c4fa;
+  --primary-light-8: #e5d8fb;
+  --primary-light-9: #f2ebfd;
+  --primary-dark-2: #632ebe;
+}
+
+html[data-primary="red"] {
+  --primary: #f56c6c;
+  --primary-light-3: #f89898;
+  --primary-light-5: #fab6b6;
+  --primary-light-7: #fcd2d2;
+  --primary-light-8: #fde2e2;
+  --primary-light-9: #fef0f0;
+  --primary-dark-2: #c45656;
+}
+
+/* --------------------------------------------------------------------------
+ * 2. 语义令牌（浅色为默认，html.dark 覆盖为深色）
+ * -------------------------------------------------------------------------- */
+:root {
+  --app-bg: #f2f6fc;
+  --header-bg: #ffffff;
+  --header-border: #e6e6e6;
+  --header-text: #303133;
+  --main-bg: #f5f7fa;
+  --card-bg: #ffffff;
+  --card-border: #e6e6e6;
+  --text-primary: #303133;
+  --text-regular: #606266;
+  --text-secondary: #909399;
+  --border-color: #dcdfe6;
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-side: 2px 0 8px rgba(0, 0, 0, 0.15);
+  --card-radius: 8px;
+  --side-item-radius: 8px;
+  --spacing-page: 24px;
+}
+
+html.dark {
+  --app-bg: #141414;
+  --header-bg: #1d1e1f;
+  --header-border: #414243;
+  --header-text: #e5eaf3;
+  --main-bg: #141414;
+  --card-bg: #1d1e1f;
+  --card-border: #414243;
+  --text-primary: #e5eaf3;
+  --text-regular: #cfd3dc;
+  --text-secondary: #909399;
+  --border-color: #414243;
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --shadow-side: none;
+}
+
+/* --------------------------------------------------------------------------
+ * 3. Element Plus 变量映射（EP 组件自动跟随主色与暗色）
+ * -------------------------------------------------------------------------- */
+html {
+  --el-color-primary: var(--primary);
+  --el-color-primary-light-3: var(--primary-light-3);
+  --el-color-primary-light-5: var(--primary-light-5);
+  --el-color-primary-light-7: var(--primary-light-7);
+  --el-color-primary-light-8: var(--primary-light-8);
+  --el-color-primary-light-9: var(--primary-light-9);
+  --el-color-primary-dark-2: var(--primary-dark-2);
+}
+
+/* --------------------------------------------------------------------------
+ * 4. 布局预设令牌（.layout-* 由 TheLayout 根节点挂载）
+ *    每个预设定义：侧栏背景 / 文字 / 菜单项交互 / 侧栏宽度 / 品牌色。
+ * -------------------------------------------------------------------------- */
+.layout-classic-dark {
+  --side-bg: linear-gradient(180deg, #304156 0%, #2b3742 100%);
+  --side-text: #bfcbd9;
+  --side-text-active: #ffffff;
+  --side-item-hover-bg: rgba(255, 255, 255, 0.08);
+  --side-item-active-bg: var(--primary);
+  --side-item-active-text: #ffffff;
+  --side-border: none;
+  --side-width: 240px;
+  --side-collapsed-width: 64px;
+  --brand-color: #ffffff;
+  --brand-accent: var(--primary);
+}
+
+.layout-classic-light {
+  --side-bg: #ffffff;
+  --side-text: #303133;
+  --side-text-active: var(--primary);
+  --side-item-hover-bg: var(--primary-light-9);
+  --side-item-active-bg: var(--primary-light-9);
+  --side-item-active-text: var(--primary);
+  --side-border: 1px solid var(--border-color);
+  --side-width: 240px;
+  --side-collapsed-width: 64px;
+  --brand-color: var(--text-primary);
+  --brand-accent: var(--primary);
+}
+
+.layout-top-nav {
+  --side-bg: linear-gradient(90deg, var(--primary-dark-2) 0%, var(--primary) 100%);
+  --side-text: rgba(255, 255, 255, 0.92);
+  --side-text-active: #ffffff;
+  --side-item-hover-bg: rgba(255, 255, 255, 0.12);
+  --side-item-active-bg: rgba(255, 255, 255, 0.18);
+  --side-item-active-text: #ffffff;
+  --side-border: none;
+  --side-width: 0px;
+  --side-collapsed-width: 0px;
+  --brand-color: #ffffff;
+  --brand-accent: #ffffff;
+}
+
+.layout-hybrid-dual {
+  --side-bg: #ffffff;
+  --side-text: #303133;
+  --side-text-active: var(--primary);
+  --side-item-hover-bg: var(--primary-light-9);
+  --side-item-active-bg: var(--primary-light-9);
+  --side-item-active-text: var(--primary);
+  --side-border: 1px solid var(--border-color);
+  --side-width: 200px;
+  --side-collapsed-width: 200px;
+  --brand-color: var(--text-primary);
+  --brand-accent: var(--primary);
+  /* 图标轨（第一栏） */
+  --rail-bg: linear-gradient(180deg, #304156 0%, #2b3742 100%);
+  --rail-text: #bfcbd9;
+  --rail-text-active: #ffffff;
+  --rail-item-hover-bg: rgba(255, 255, 255, 0.08);
+  --rail-item-active-bg: var(--primary);
+}
+
+.layout-compact-card {
+  --side-bg: #ffffff;
+  --side-text: #303133;
+  --side-text-active: var(--primary);
+  --side-item-hover-bg: var(--primary-light-9);
+  --side-item-active-bg: var(--primary);
+  --side-item-active-text: #ffffff;
+  --side-border: 1px solid var(--border-color);
+  --side-width: 240px;
+  --side-collapsed-width: 64px;
+  --brand-color: var(--text-primary);
+  --brand-accent: var(--primary);
+  /* 更松弛的卡片观感 */
+  --card-radius: 16px;
+  --side-item-radius: 12px;
+}
+
+/* 深色模式下浅色侧栏预设的表面修正（html.dark 特异性高于单布局 class） */
+html.dark .layout-classic-light,
+html.dark .layout-compact-card,
+html.dark .layout-hybrid-dual {
+  --side-bg: #1d1e1f;
+  --side-text: #cfd3dc;
+  --side-text-active: #ffffff;
+  --side-item-hover-bg: rgba(255, 255, 255, 0.08);
+  --side-item-active-bg: var(--primary);
+  --side-item-active-text: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+ * 5. 布局 DOM 皮肤（结构样式见各组件 scoped，此处只放皮肤）
+ * -------------------------------------------------------------------------- */
+/* 侧栏 / 图标轨 / 二级菜单列 */
+.app-aside {
+  background: var(--side-bg);
+  color: var(--side-text);
+  border-right: var(--side-border);
+  box-shadow: var(--shadow-side);
+  transition: width 0.2s ease;
+}
+
+.app-rail {
+  background: var(--rail-bg);
+  color: var(--rail-text);
+  box-shadow: var(--shadow-side);
+}
+
+.app-submenu {
+  background: var(--side-bg);
+  color: var(--side-text);
+  border-right: var(--side-border);
+}
+
+/* 品牌区 */
+.brand {
+  color: var(--brand-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.brand .el-icon {
+  font-size: 24px;
+  color: var(--brand-accent);
+}
+
+.brand-rail {
+  margin-bottom: 16px;
+}
+
+.submenu-title {
+  padding: 20px 16px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* 顶栏 */
+.app-header {
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  color: var(--header-text);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--spacing-page);
+}
+
+/* top-nav 布局：顶栏即侧栏皮肤（主色渐变） */
+.layout-top-nav .app-header {
+  background: var(--side-bg);
+  border-bottom: none;
+  color: var(--side-text);
+}
+
+.layout-top-nav .header-title,
+.layout-top-nav .header-actions .el-button {
+  color: var(--side-text);
+}
+
+.layout-top-nav .header-actions .el-button:hover {
+  color: var(--side-text-active);
+}
+
+/* 主区与卡片 */
+.app-main {
+  background: var(--main-bg);
+  padding: var(--spacing-page);
+  overflow-y: auto;
+}
+
+.el-card {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+  border-radius: var(--card-radius);
+}
+
+/* --------------------------------------------------------------------------
+ * 6. 侧栏菜单皮肤（SidebarMenu 渲染的 el-menu）
+ * -------------------------------------------------------------------------- */
+.sidebar-menu {
+  border: none;
+  background: transparent;
+}
+
+.sidebar-menu .el-menu-item,
+.sidebar-menu .el-sub-menu__title {
+  color: var(--side-text);
+  border-radius: var(--side-item-radius);
+  margin: 5px 12px;
+}
+
+.sidebar-menu .el-menu-item:hover,
+.sidebar-menu .el-sub-menu__title:hover {
+  background-color: var(--side-item-hover-bg);
+  color: var(--side-text-active);
+}
+
+.sidebar-menu .el-menu-item.is-active {
+  background: var(--side-item-active-bg);
+  color: var(--side-item-active-text);
+}
+
+/* 图标轨模式（折叠态仅图标） */
+.sidebar-menu.el-menu--collapse {
+  width: 100%;
+}
+
+.sidebar-menu.el-menu--collapse .el-menu-item,
+.sidebar-menu.el-menu--collapse .el-sub-menu__title {
+  margin: 5px 0;
+}
+
+/* 图标轨布局：图标轨内的菜单 */
+.app-rail .sidebar-menu .el-menu-item.is-active {
+  background: var(--rail-item-active-bg);
+  color: var(--rail-text-active);
+}
+
+.app-rail .sidebar-menu .el-menu-item:hover {
+  background: var(--rail-item-hover-bg);
+}
+
+/* 顶部横向菜单（top-nav 布局） */
+.top-nav-menu {
+  background: transparent;
+  border: none;
+  flex: 1;
+  min-width: 0;
+  margin-left: 24px;
+}
+
+.top-nav-menu .el-menu-item {
+  color: var(--side-text);
+  height: 60px;
+  line-height: 60px;
+  border-bottom: none;
+}
+
+.top-nav-menu .el-menu-item:hover {
+  background: var(--side-item-hover-bg);
+  color: var(--side-text-active);
+}
+
+.top-nav-menu .el-menu-item.is-active {
+  background: var(--side-item-active-bg);
+  color: var(--side-item-active-text);
+  border-radius: 6px;
+}
+
+/* --------------------------------------------------------------------------
+ * 7. 响应式（窄屏收拢操作区文字）
+ * -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 12px;
+  }
+
+  .app-main {
+    padding: 12px;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  .action-label {
+    display: none;
+  }
+
+  .top-nav-menu {
+    margin-left: 12px;
+  }
+}

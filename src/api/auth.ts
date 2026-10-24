@@ -1,4 +1,5 @@
-import { request } from './request';
+import { request, removeAuthToken } from './request';
+import { setCurrentAdmin, type CurrentAdmin } from '../auth/session';
 
 export interface LoginParams {
   username: string;
@@ -6,21 +7,37 @@ export interface LoginParams {
 }
 
 export interface LoginResult {
-  code?: number;
-  success?: boolean;
+  code: number;
+  msg: string;
   data?: {
-    authadmintoken?: string;
-    accessToken?: string;
     token?: string;
-    [key: string]: unknown;
+    expire_time?: number;
   };
-  token?: string;
-  message?: string;
+}
+
+export interface CurrentAdminResult {
+  code: number;
+  msg: string;
+  data: CurrentAdmin;
 }
 
 export async function login(params: LoginParams): Promise<LoginResult> {
-  return request<LoginResult>('/admin/AuthController/login', {
+  return request<LoginResult>('/api/admin/auth/login', {
     method: 'POST',
     data: params
   });
+}
+
+export async function logout(): Promise<void> {
+  try {
+    await request('/api/admin/auth/logout', { method: 'POST', skipRefresh: true });
+  } finally {
+    removeAuthToken();
+  }
+}
+
+export async function getCurrentAdmin(): Promise<CurrentAdmin> {
+  const result = await request<CurrentAdminResult>('/api/admin/auth/me');
+  setCurrentAdmin(result.data);
+  return result.data;
 }

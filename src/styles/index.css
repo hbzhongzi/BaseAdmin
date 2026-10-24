@@ -10,5 +10,5 @@ body,
 }
 body {
   font-family: "Helvetica Neue", Arial, sans-serif;
-  background: #f2f6fc;
+  background: var(--app-bg);
 }

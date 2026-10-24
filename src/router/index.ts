@@ -1,74 +1,49 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import TheLayout from '../layout/TheLayout.vue';
-import { AUTH_TOKEN_KEY } from '../api/request';
-
-const routes = [
-  {
-    path: '/',
-    component: TheLayout,
-    children: [
-      {
-        path: '',
-        redirect: '/events'
-      },
-      {
-        path: 'events',
-        name: 'EventList',
-        component: () => import('../views/EventList.vue')
-      },
-      {
-        path: 'users',
-        name: 'UserList',
-        component: () => import('../views/UserList.vue')
-      },
-      {
-        path: 'check-types',
-        name: 'CheckTypeList',
-        component: () => import('../views/CheckTypeList.vue')
-      },
-      {
-        path: 'image-resources',
-        name: 'ImageResourceList',
-        component: () => import('../views/ImageResourceList.vue')
-      },
-      {
-        path: 'member-packages',
-        name: 'MemberPackageList',
-        component: () => import('../views/MemberPackageList.vue')
-      },
-      {
-        path: 'check-rules',
-        name: 'CheckRuleList',
-        component: () => import('../views/CheckRuleList.vue')
-      }
-    ]
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('../views/Login.vue')
-  }
-];
+import { currentUser, hasPermission, isAuthenticated } from '../auth/session';
+import { getCurrentAdmin } from '../api/auth';
 
 const router = createRouter({
-  history: createWebHistory('/admin/'),  // ⚠️ 添加 base 参数
-  routes
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      component: TheLayout,
+      children: [
+        { path: '', name: 'Home', component: () => import('../views/Home.vue') },
+        {
+          path: 'permissions',
+          name: 'Permissions',
+          component: () => import('../views/PermissionList.vue'),
+          meta: { permission: 'permission:list' },
+        },
+      ]
+    },
+    { path: '/login', name: 'Login', component: () => import('../views/Login.vue') },
+    { path: '/403', name: 'Forbidden', component: () => import('../views/Forbidden.vue') },
+    { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('../views/NotFound.vue') },
+  ]
 });
 
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem(AUTH_TOKEN_KEY);
-
-  if (!token && to.path !== '/login') {
-    next('/login');
-    return;
+declare module 'vue-router' {
+  interface RouteMeta {
+    permission?: string;
   }
+}
 
-  if (token && to.path === '/login') {
-    next('/');
-    return;
+router.beforeEach(async (to) => {
+  if (!isAuthenticated.value && to.name !== 'Login') return { name: 'Login' };
+  if (isAuthenticated.value && !currentUser.value && to.name !== 'Login') {
+    try {
+      await getCurrentAdmin();
+    } catch {
+      return { name: 'Login' };
+    }
   }
-
-  next();
+  if (to.meta.permission && !hasPermission(to.meta.permission)) {
+    return { name: 'Forbidden' };
+  }
+  if (isAuthenticated.value && to.name === 'Login') return { name: 'Home' };
 });
 
 export default router;

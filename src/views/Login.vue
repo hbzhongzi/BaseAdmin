@@ -2,7 +2,7 @@
   <div class="login-page">
     <el-card class="login-card">
       <h2>登录后台</h2>
-      <el-form :model="form" status-icon>
+      <el-form :model="form" status-icon @submit.prevent="handleLogin">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username" placeholder="请输入用户名" />
         </el-form-item>
@@ -10,7 +10,7 @@
           <el-input v-model="form.password" type="password" placeholder="请输入密码" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleLogin">登录</el-button>
+          <el-button type="primary" native-type="submit" :loading="loading">登录</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -18,46 +18,47 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { login } from '../api/auth';
-import { AUTH_TOKEN_KEY } from '../api/request';
+import { getCurrentAdmin, login } from '../api/auth';
+import { setAuthToken } from '../auth/session';
 
 const router = useRouter();
+const loading = ref(false);
 const form = reactive({
-  username: 'admin',
-  password: '123456'
+  username: '',
+  password: ''
 });
 
 const handleLogin = async () => {
+  if (loading.value) return;
   if (!form.username || !form.password) {
     ElMessage.warning('请填写用户名和密码');
     return;
   }
 
+  loading.value = true;
   try {
     const result = await login({
       username: form.username,
       password: form.password
     });
 
-    const token =
-      result.data?.authadmintoken ||
-      result.data?.accessToken ||
-      result.data?.token ||
-      result.token ||
-      (result.data as any)?.access_token;
+    const token = result.data?.token;
     if (!token) {
-      throw new Error(result.message || '登录失败，未返回 token');
+      throw new Error(result.msg || '登录失败，未返回 token');
     }
 
-    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    setAuthToken(token);
+    await getCurrentAdmin();
     ElMessage.success('登录成功');
     await router.push('/');
   } catch (error) {
     const message = error instanceof Error ? error.message : '登录失败';
     ElMessage.error(message);
+  } finally {
+    loading.value = false;
   }
 };
 </script>
@@ -68,7 +69,7 @@ const handleLogin = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f2f6fc;
+  background: var(--app-bg);
 }
 .login-card {
   width: 380px;
